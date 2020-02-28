@@ -4,8 +4,11 @@ import {{modelPackage}}.*;
 import {{package}}.{{classname}}Service;
 import {{package}}.factories.{{classname}}ServiceFactory;
 
-import io.swagger.annotations.ApiParam;
-import io.swagger.jaxrs.*;
+import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.enums.*;
+import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.responses.*;
+import io.swagger.v3.oas.annotations.security.*;
 
 {{#imports}}import {{import}};
 {{/imports}}
@@ -41,15 +44,15 @@ public class {{classname}}  {
     {{#subresourceOperation}}@Path("{{{path}}}"){{/subresourceOperation}}
     {{#hasConsumes}}@Consumes({ {{#consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/consumes}} }){{/hasConsumes}}
     {{#hasProduces}}@Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} }){{/hasProduces}}
-    @io.swagger.annotations.ApiOperation(value = "{{{summary}}}", notes = "{{{notes}}}", response = {{{returnBaseType}}}.class{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#hasAuthMethods}}, authorizations = {
-        {{#authMethods}}@io.swagger.annotations.Authorization(value = "{{name}}"{{#isOAuth}}, scopes = {
-            {{#scopes}}@io.swagger.annotations.AuthorizationScope(scope = "{{scope}}", description = "{{description}}"){{#hasMore}},
-            {{/hasMore}}{{/scopes}}
-        }{{/isOAuth}}){{#hasMore}},
-        {{/hasMore}}{{/authMethods}}
-    }{{/hasAuthMethods}}, tags={ {{#vendorExtensions.x-tags}}"{{tag}}"{{#hasMore}}, {{/hasMore}}{{/vendorExtensions.x-tags}} })
-    @io.swagger.annotations.ApiResponses(value = { {{#responses}}
-        @io.swagger.annotations.ApiResponse(code = {{{code}}}, message = "{{{message}}}", response = {{{baseType}}}.class{{#containerType}}, responseContainer = "{{{containerType}}}"{{/containerType}}){{#hasMore}},{{/hasMore}}{{/responses}} })
+    @Operation(summary = "{{{summary}}}", description = "{{{notes}}}", tags = { {{#vendorExtensions.x-tags}}"{{tag}}"{{#hasMore}}, {{/hasMore}}{{/vendorExtensions.x-tags}} }{{#hasAuthMethods}},
+        security = {
+            {{#authMethods}}@SecurityRequirement(name = "{{name}}"{{#isOAuth}}, scopes = {{{#scopes}}"{{scope}}"{{#hasMore}}, {{/hasMore}}{{/scopes}}}{{/isOAuth}}){{#hasMore}},
+            {{/hasMore}}{{/authMethods}}
+        }{{/hasAuthMethods}},
+        responses = {
+            {{#responses}}@ApiResponse(responseCode = {{{code}}}, message = "{{{message}}}", content = @Content(schema = @Schema(implementation = {{{baseType}}}.class))){{#hasMore}},
+            {{/hasMore}}{{/responses}}
+        })
     public Response {{nickname}}(
         {{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}},
         {{/allParams}}@Context SecurityContext securityContext)
