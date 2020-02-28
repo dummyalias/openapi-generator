@@ -25,7 +25,6 @@ import javax.validation.constraints.*;
 @Path("/{{{baseName}}}")
 @RequestScoped
 
-@Api(description = "the {{{baseName}}} API")
 {{#hasConsumes}}@Consumes({ {{#consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/consumes}} }){{/hasConsumes}}
 {{#hasProduces}}@Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} }){{/hasProduces}}
 {{>generatedAnnotation}}
